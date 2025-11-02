@@ -46,6 +46,8 @@ brew install tesseract-lang
 **Windows:**
 [Tesseract のダウンロードページ](https://github.com/UB-Mannheim/tesseract/wiki)からインストーラーをダウンロードし、インストール時に「日本語」を選択してください。
 
+**⚠️ 日本語データが含まれていない場合**: 📖 **[日本語データの手動インストール手順](TESSERACT_JAPANESE_INSTALL.md)**を参照
+
 ### 4. APIキーの設定
 
 `.env`ファイルをプロジェクトのルートディレクトリに作成：
@@ -138,8 +140,24 @@ Windowsで実行ファイルを作成する場合は、以下のガイドを参�
 
 📖 **[WINDOWS_QUICKSTART.md](WINDOWS_QUICKSTART.md)** - 5分で始めるクイックスタート（推奨）
 📖 **[WINDOWS_BUILD.md](WINDOWS_BUILD.md)** - 詳細なビルド手順とトラブルシューティング
+📖 **[TESSERACT_JAPANESE_INSTALL.md](TESSERACT_JAPANESE_INSTALL.md)** - Tesseract日本語データの手動インストール
 
 **クイックビルド（Windows）:**
+
+**方法1: PyInstallerビルド（推奨・高速）**
+```cmd
+# 1. 依存関係をインストール
+pip install -r requirements.txt
+
+# 2. ワンコマンドでビルド（自動化スクリプト）
+build_pyinstaller.bat
+
+# 3. 実行
+cd dist\SummaryForDoc
+SummaryForDoc.exe
+```
+
+**方法2: Fletビルド（代替）**
 ```cmd
 # 1. 依存関係をインストール
 pip install -r requirements.txt
@@ -171,7 +189,9 @@ open build/macos/SummaryForDoc.app
 ```bash
 python main.py
 ```
-**注意**: 開発モードではドラッグ&ドロップが動作しません。ファイル選択ボタンを使用してください。
+**注意**:
+- 現在のバージョン（v1.2）ではドラッグ&ドロップ機能は無効化されています
+- ファイル選択は「📁 ファイルを選択」ボタンで行います（全モード共通）
 
 ## ライセンス
 

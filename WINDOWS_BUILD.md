@@ -2,6 +2,12 @@
 
 ## 変更履歴
 
+### v1.2 - PyInstallerビルド対応（推奨）
+- ✅ PyInstallerによる高速ビルドに対応
+- ✅ flet_dropzoneを無効化（ビルド互換性のため）
+- ✅ ファイルピッカーのみで動作（安定性重視）
+- ✅ ビルド自動化スクリプト追加 (`build_pyinstaller.bat`)
+
 ### v1.1 - Windows互換性の改善
 - ✅ ファイルピッカーをクロスプラットフォーム対応に変更（Flet標準FilePickerを使用）
 - ✅ ドラッグ&ドロップのWindows対応を強化（file://URIとURLエンコード処理）
@@ -35,77 +41,122 @@ pip install -r requirements.txt
 
 ## ビルド手順
 
-### 1. 依存関係の確認
-まず、必要なパッケージがすべてインストールされているか確認：
+### 🚀 方法1: PyInstallerビルド（推奨）
+
+**メリット**:
+- ✅ 高速ビルド（5-10分）
+- ✅ 安定性が高い
+- ✅ ファイルピッカーが確実に動作
+- ✅ 自動化スクリプトあり
+
+#### クイックビルド
+
 ```cmd
-pip install -r requirements.txt
+build_pyinstaller.bat
 ```
 
-### 2. 既存のビルドをクリーンアップ（初回は不要）
+**このスクリプトは以下を自動実行します:**
+1. 既存ビルドのクリーンアップ
+2. PyInstallerでアプリをビルド
+3. Tesseractファイルのコピー
+4. ビルド結果の検証
+
+#### 手動ビルド
+
 ```cmd
+# 1. クリーンアップ
 rmdir /s /q build
+rmdir /s /q dist
+
+# 2. PyInstallerでビルド
+python -m PyInstaller SummaryForDoc.spec
+
+# 3. Tesseractをコピー
+mkdir "dist\SummaryForDoc\tesseract\tessdata"
+copy "C:\Program Files\Tesseract-OCR\tesseract.exe" "dist\SummaryForDoc\tesseract\"
+copy "C:\Program Files\Tesseract-OCR\tessdata\eng.traineddata" "dist\SummaryForDoc\tesseract\tessdata\"
+copy "C:\Program Files\Tesseract-OCR\tessdata\jpn.traineddata" "dist\SummaryForDoc\tesseract\tessdata\"
+copy "C:\Program Files\Tesseract-OCR\*.dll" "dist\SummaryForDoc\tesseract\"
+
+# 4. 動作確認
+cd dist\SummaryForDoc
+SummaryForDoc.exe
 ```
 
-### 3. Windows版アプリをビルド
+**ビルド完了後の構造:**
+```
+dist/SummaryForDoc/
+├── SummaryForDoc.exe      # メイン実行ファイル (14MB)
+├── _internal/             # Python依存関係
+└── tesseract/             # Tesseract OCR
+    ├── tesseract.exe
+    ├── tessdata/
+    │   ├── eng.traineddata
+    │   └── jpn.traineddata
+    └── *.dll (60個以上)
+```
+
+**総サイズ**: 約221MB
+
+---
+
+### 方法2: Flet Buildビルド（代替）
+
+**注意**: 初回ビルドに45分以上かかることがあります。時間がない場合は方法1を推奨。
+
+#### ビルド手順
+
 ```cmd
+# 1. 依存関係の確認
+pip install -r requirements.txt
+
+# 2. 既存のビルドをクリーンアップ
+rmdir /s /q build
+
+# 3. Fletでビルド
 flet build windows
-```
 
-ビルドには数分かかります。完了すると `build\windows\` ディレクトリに実行ファイルが生成されます。
-
-**注意**: ビルド時に `flet-dropzone` に関する警告が表示される場合がありますが、これは正常です。ビルド版ではドラッグ&ドロップ機能は正常に動作します。
-
-### 4. Tesseractをアプリに統合
-```cmd
+# 4. Tesseractをコピー
 copy_tesseract_windows.bat
-```
 
-このスクリプトは以下を実行します:
-- Tesseract実行ファイルのコピー
-- 日本語・英語の学習データのコピー
-- 必要なDLLファイルのコピー
-
-### 5. 動作確認
-```cmd
+# 5. 動作確認
 cd build\windows
 SummaryForDoc.exe
 ```
 
+**注意**: ビルド時に `flet-dropzone` に関する警告が表示される場合がありますが、現在は無効化されているため無視してください。
+
 アプリが起動したら:
 1. APIキーを設定
-2. **ファイルピッカーボタン**でファイルを選択、または**ドラッグ&ドロップ**でファイルを追加
+2. **「📁 ファイルを選択」ボタン**でファイルを選択
 3. テスト用ファイル:
    - テキストファイル（.txt）
    - PDFファイル（.pdf）
    - 画像ファイル（.jpg, .png）
 4. OCRとAI要約が正常に動作することを確認
 
-**ドラッグ&ドロップの確認**:
-- Windows Explorer からファイルをアプリウィンドウにドラッグ
-- 複数ファイルの同時ドロップも可能
-- サポートされていない形式は自動的にフィルタリング
+**ファイル選択の確認**:
+- ファイル選択ダイアログが正常に開く
+- 複数ファイルの選択が可能（Ctrlキー + クリック）
+- サポートされている形式のみが表示される
 
 ## トラブルシューティング
 
-### ドラッグ&ドロップが動作しない
-**症状**: ファイルをドラッグしてもアプリに追加されない
+### ドラッグ&ドロップが利用できない（v1.2以降）
 
-**原因と解決方法**:
-1. **開発モードで実行している**:
-   - `python main.py` で実行している場合、flet-dropzoneは動作しません
-   - **解決**: ビルド版（`flet build windows`）で実行してください
+**現在の状態**:
+- ドラッグ&ドロップ機能は、PyInstallerビルドとの互換性問題により**一時的に無効化**されています
+- 代わりに、より安定した**ファイルピッカー機能**を使用してください
 
-2. **管理者権限の問題**:
-   - アプリを管理者権限で実行している場合、通常のExplorerからのドラッグ&ドロップができないことがあります
-   - **解決**: 管理者権限なしでアプリを実行してください
+**ファイルの追加方法**:
+1. 「📁 ファイルを選択」ボタンをクリック
+2. ファイル選択ダイアログで目的のファイルを選択
+3. 複数ファイルを選択する場合は**Ctrlキーを押しながらクリック**
 
-3. **ファイル形式の問題**:
-   - サポートされていない形式（.docx, .xlsxなど）はドロップできません
-   - **確認**: .txt, .pdf, .jpg, .png のみサポート
-
-4. **代替手段**:
-   - ドラッグ&ドロップが使えない場合は、「📁 ファイルを選択」ボタンをクリック
-   - Fletの標準FilePickerが開きます（全プラットフォーム対応）
+**技術的な背景**:
+- flet-dropzoneパッケージがPyInstallerでビルドしたアプリで正常に動作しない問題があります
+- 将来のバージョンで修正される可能性があります
+- 現在はFlet標準のFilePickerで同等の機能を提供しています
 
 ### ファイルピッカーが開かない
 **症状**: 「📁 ファイルを選択」ボタンを押してもファイル選択ダイアログが表示されない
@@ -141,8 +192,9 @@ SummaryForDoc.exe
 **原因**: インストール時に日本語学習データを選択していない
 
 **解決方法**:
-1. Tesseractを再インストールし、「Additional language data」で「Japanese」を選択
-2. または、[tessdata リポジトリ](https://github.com/tesseract-ocr/tessdata)から `jpn.traineddata` をダウンロードして手動で配置:
+1. **📖 [日本語データの手動インストール手順](TESSERACT_JAPANESE_INSTALL.md)を参照**（推奨）
+2. または、Tesseractを再インストールし、「Additional language data」で「Japanese」を選択
+3. または、[tessdata リポジトリ](https://github.com/tesseract-ocr/tessdata)から `jpn.traineddata` をダウンロードして手動で配置:
    ```
    C:\Program Files\Tesseract-OCR\tessdata\jpn.traineddata
    ```
@@ -174,12 +226,37 @@ SummaryForDoc.exe
 
 ## ビルド構成
 
+### PyInstallerビルド（推奨）
+
+ビルド後のディレクトリ構造:
+```
+dist/SummaryForDoc/
+├── SummaryForDoc.exe      # メイン実行ファイル (14MB)
+├── _internal/             # Python依存関係とライブラリ
+│   ├── flet/              # Flet フレームワーク
+│   ├── PIL/               # Pillow (画像処理)
+│   ├── PyPDF2/            # PDF読み込み
+│   └── その他のPythonパッケージ
+└── tesseract/             # Tesseract OCR統合
+    ├── tesseract.exe      # Tesseract実行ファイル
+    ├── tessdata/          # 学習データ
+    │   ├── eng.traineddata # 英語 (4.0MB)
+    │   └── jpn.traineddata # 日本語 (2.4MB)
+    ├── libtesseract-5.dll # Tesseract本体DLL
+    ├── libleptonica-6.dll # 画像処理ライブラリ
+    └── その他60個以上のDLL
+```
+
+**総サイズ**: 約221MB
+
+### Flet Buildビルド
+
 ビルド後のディレクトリ構造:
 ```
 build/windows/
 ├── SummaryForDoc.exe      # メイン実行ファイル
 ├── data/                   # Fletのリソース
-└── tesseract/              # Tesseract統合（copy_tesseract_windows.batで追加）
+└── tesseract/              # Tesseract統合
     ├── tesseract.exe       # Tesseract実行ファイル
     ├── tessdata/           # 学習データ
     │   ├── eng.traineddata # 英語
@@ -191,11 +268,24 @@ build/windows/
 
 ## 配布用パッケージの作成
 
-### 方法1: ZIPファイルでの配布
+### 方法1: ZIPファイルでの配布（推奨）
+
+#### PyInstallerビルドの場合
+```cmd
+cd dist
+powershell Compress-Archive -Path SummaryForDoc -DestinationPath SummaryForDoc-Windows-v1.2.zip
+```
+
+#### Flet Buildの場合
 ```cmd
 cd build
 powershell Compress-Archive -Path windows -DestinationPath SummaryForDoc-Windows.zip
 ```
+
+**配布時の注意事項**:
+- ZIPファイルを展開後、`SummaryForDoc.exe` を実行
+- Tesseractが統合されているため、別途インストール不要
+- `.env`ファイルは含まれないため、各ユーザーがAPIキーを設定する必要あり
 
 ### 方法2: インストーラーの作成
 [Inno Setup](https://jrsoftware.org/isinfo.php) などのツールを使用してインストーラーを作成できます。

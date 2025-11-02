@@ -27,6 +27,9 @@ pip install -r requirements.txt
 3. **重要**: インストール時に「Japanese」言語データを選択
 4. デフォルトのインストール先（`C:\Program Files\Tesseract-OCR`）を使用
 
+**⚠️ 日本語データが含まれていない場合**:
+インストーラーに日本語オプションがない場合は、[日本語データの手動インストール手順](TESSERACT_JAPANESE_INSTALL.md)を参照してください。
+
 ### ステップ3: アプリをビルド
 
 ```cmd
@@ -82,7 +85,7 @@ SummaryForDoc.exe
 ### ドラッグ&ドロップが動かない
 → **解決**: 「📁 ファイルを選択」ボタンを使用してください（常に動作します）
 
-### Tesseractエラーが出る
+### Tesseractエラーが出る / 日本語OCRが動かない
 → **解決**:
 1. Tesseractが正しくインストールされているか確認：
    ```cmd
@@ -92,6 +95,9 @@ SummaryForDoc.exe
    ```cmd
    dir "C:\Program Files\Tesseract-OCR\tessdata\jpn.traineddata"
    ```
+3. 日本語データがない場合:
+   - 📖 **[日本語データの手動インストール手順](TESSERACT_JAPANESE_INSTALL.md)**を参照
+   - GitHubから直接ダウンロードして配置できます（5分以内で完了）
 
 ### ビルドに失敗する
 → **解決**:
@@ -121,6 +127,7 @@ python main.py
 
 より詳しいビルド手順やトラブルシューティングについては、以下を参照してください：
 
+- [TESSERACT_JAPANESE_INSTALL.md](TESSERACT_JAPANESE_INSTALL.md) - 日本語データの手動インストール（推奨）
 - [WINDOWS_BUILD.md](WINDOWS_BUILD.md) - 詳細なビルド手順
 - [README.md](README.md) - プロジェクト全体の説明
 - [GETTING_STARTED.md](GETTING_STARTED.md) - 機能の詳細説明

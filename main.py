@@ -7,12 +7,8 @@ import flet as ft
 from pathlib import Path
 from typing import List
 
-try:
-    import flet_dropzone as ftd
-    DROPZONE_AVAILABLE = True
-except ImportError:
-    DROPZONE_AVAILABLE = False
-    print("⚠️  flet-dropzone が利用できません。ビルド版では動作します。")
+# ドラッグ&ドロップはビルド環境で問題が多いため、無効化
+DROPZONE_AVAILABLE = False
 
 from src.config import config
 from src.file_reader import FileReader

@@ -1,0 +1,62 @@
+[tool.poetry]
+name = "SummaryForDoc"
+version = "1.0.0"
+description = "医療文書要約ツール - Mac・Windows・Linux対応"
+authors = ["Your Name"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.flet]
+# Fletアプリケーション設定
+name = "SummaryForDoc"
+description = "医療文書要約ツール"
+author = "Your Name"
+version = "1.0.0"
+
+# Windows向け設定
+[tool.flet.windows]
+product_name = "SummaryForDoc"
+product_version = "1.0.0"
+file_description = "医療文書要約ツール"
+copyright = "Copyright (c) 2024"
+# アイコンファイル（オプション、あれば設定）
+# icon = "assets/icon.ico"
+
+# macOS向け設定
+[tool.flet.macos]
+bundle_identifier = "com.example.summaryfordoc"
+# アイコンファイル（オプション、あれば設定）
+# icon = "assets/icon.icns"
+
+# Linux向け設定
+[tool.flet.linux]
+# アイコンファイル（オプション、あれば設定）
+# icon = "assets/icon.png"
+
+# ビルドに含めるパッケージとモジュール
+[tool.flet.include]
+# すべての依存関係を含める
+packages = [
+    "flet",
+    "flet_dropzone",
+    "anthropic",
+    "openai",
+    "PyPDF2",
+    "Pillow",
+    "pytesseract",
+    "python-dotenv"
+]
+
+# srcディレクトリのすべてのモジュールを含める
+modules = [
+    "src",
+    "src.config",
+    "src.config_manager",
+    "src.file_reader",
+    "src.pii_remover",
+    "src.presets",
+    "src.prompts",
+    "src.summarizer"
+]

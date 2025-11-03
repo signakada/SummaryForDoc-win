@@ -45,9 +45,6 @@ Source: "dist\SummaryForDoc\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignorever
 ; _internalフォルダ全体（PyInstallerの重要なランタイムファイル）
 Source: "dist\SummaryForDoc\_internal\*"; DestDir: "{app}\_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-; tesseractフォルダ全体（OCR機能に必要）
-Source: "dist\SummaryForDoc\tesseract\*"; DestDir: "{app}\tesseract"; Flags: ignoreversion recursesubdirs createallsubdirs
-
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"

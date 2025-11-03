@@ -6,6 +6,8 @@ Mac・Windows・Linux対応
 import flet as ft
 from pathlib import Path
 from typing import List
+import sys
+import os
 
 # ドラッグ&ドロップはビルド環境で問題が多いため、無効化
 DROPZONE_AVAILABLE = False
@@ -15,6 +17,17 @@ from src.file_reader import FileReader
 from src.pii_remover import PIIRemover
 from src.summarizer import MedicalSummarizer
 from src.prompts import PromptManager
+
+
+def get_resource_path(relative_path):
+    """PyInstallerでバンドルされた場合のリソースパスを取得"""
+    try:
+        # PyInstallerが作成した一時フォルダのパス
+        base_path = sys._MEIPASS
+    except AttributeError:
+        # 通常のPython実行時
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 
 class MedicalSummarizerApp:
@@ -27,6 +40,11 @@ class MedicalSummarizerApp:
         self.page.window.height = 700
         self.page.padding = 20
         self.page.scroll = ft.ScrollMode.AUTO
+
+        # ウィンドウアイコンを設定
+        icon_path = get_resource_path("icon.ico")
+        if os.path.exists(icon_path):
+            self.page.window.icon = icon_path
 
         # 状態管理
         self.selected_files: List[Path] = []

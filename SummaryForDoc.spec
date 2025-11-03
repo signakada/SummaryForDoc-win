@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('icon.ico', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -15,6 +15,9 @@ a = Analysis(
     optimize=0,
 )
 pyz = PYZ(a.pure)
+
+import os
+_root = os.path.abspath(SPECPATH)
 
 exe = EXE(
     pyz,
@@ -32,7 +35,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='icon.ico',
+    icon=os.path.join(_root, 'icon.ico'),
 )
 coll = COLLECT(
     exe,
